@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    table {
+      text-align: center;
+      margin-left: 10%;
+      margin-right: 50%;
+      font-family: 'Lucida Sans', sans-serif;
+    }
+    input, button {
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-family: 'Lucida Sans', sans-serif;
+    }
+    .error {
+      border: 2px solid red; /* Red border for invalid input */
+    }
+    .valid {
+      border: 2px solid white; /* White border for valid input */
+    }
+    #message {
+      color: red;
+      font-weight: bold;
+    }
+    #reservationDetails {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div align="center">
+    <h1>Booking your place for your dinner!</h1>  
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" size="22"><br>
+
+    <label for="phone">Phone Number</label>
+    <input type="text" id="phone" size="22"><br>
+
+    <!-- Error message container -->
+    <div id="message"></div>
+  </div>
+
+  <div align="left" style="margin-left: 10%;">
+    <h2>Select a time</h2>
+    <!-- Only one time can be selected using the same name -->
+    <input type="radio" id="first" name="seating" value="05:00" checked>
+    <label for="first">5:00</label><br>
+    <input type="radio" id="second" name="seating" value="06:00">
+    <label for="second">6:00</label><br>
+    <input type="radio" id="third" name="seating" value="07:00">
+    <label for="third">7:00</label><br>
+    <input type="radio" id="fourth" name="seating" value="08:00">
+    <label for="fourth">8:00</label><br>
+
+    <h2>What would you like to have with us?</h2>
+    <!-- Optional food checkboxes -->
+    <input type="checkbox" id="starters" name="food" value="Starters">
+    <label for="starters">Starters</label><br>
+    <input type="checkbox" id="Main" name="food" value="Main Course">
+    <label for="Main">Main Course</label><br>
+    <input type="checkbox" id="dessert" name="food" value="Desserts">
+    <label for="dessert">Desserts</label><br>
+    <input type="checkbox" id="drinks" name="food" value="Drinks">
+    <label for="drinks">Drinks</label><br><br>
+
+    <!-- Submit button triggers the validation and display logic -->
+    <button onclick="submitForm()" id="submit">Submit</button>
+
+    <!-- Output reservation result here -->
+    <div id="reservationDetails"></div>
+  </div>
+
+  <script>
+    // Get references to inputs and display elements
+    const nameInput = document.getElementById("name");
+    const phoneInput = document.getElementById("phone");
+    const message = document.getElementById("message");
+    const reservationDetails = document.getElementById("reservationDetails");
+
+    // Validate name field on losing focus
+    nameInput.addEventListener("blur", validateName);
+    phoneInput.addEventListener("blur", validatePhone);
+
+    // Function to validate name input
+    function validateName() {
+      const name = nameInput.value.trim();
+      const parts = name.split(" ").filter(p => p.length > 0); // split by space and remove empty parts
+
+      // Check if name is empty
+      if (name === "") {
+        message.textContent = "Error: Name is empty.";
+        nameInput.className = "error";
+        return false;
+
+      // Check if there are at least two name parts
+      } else if (parts.length < 2) {
+        message.textContent = "Error: First and last names are required.";
+        nameInput.className = "error";
+        return false;
+
+      // Name is valid
+      } else {
+        nameInput.className = "valid";
+        return true;
+      }
+    }
+
+    // Function to validate phone input
+    function validatePhone() {
+      const phone = phoneInput.value.trim();
+
+      // Check if phone is empty
+      if (phone === "") {
+        message.textContent = "Error: Phone number is empty.";
+        phoneInput.className = "error";
+        return false;
+      }
+
+      // Check if phone matches required format (starts with number, 6 characters)
+      if (!/^[0-9][A-Za-z0-9]{5}$/.test(phone)) {
+        message.textContent = "Error: Phone number must start with a number and be 6 characters.";
+        phoneInput.className = "error";
+        return false;
+
+      // Phone is valid
+      } else {
+        phoneInput.className = "valid";
+        return true;
+      }
+    }
+
+    // Function called on form submission
+    function submitForm() {
+      // Clear previous messages
+      reservationDetails.textContent = "";
+      message.textContent = "";
+
+      // Validate fields
+      const nameValid = validateName();
+      const phoneValid = validatePhone();
+
+      // Stop if any validation fails
+      if (!nameValid || !phoneValid) return;
+
+      // Extract values if all valid
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const time = document.querySelector("input[name='seating']:checked").value;
+
+      // Get selected food choices
+      const foods = Array.from(document.querySelectorAll("input[name='food']:checked"))
+                         .map(f => f.value)
+                         .join(" ");
+
+      // Display reservation summary in HTML (no alert popup)
+      reservationDetails.textContent = `Reservation for: ${name} Phone: (${phone}) at ${time} Starters are: ${foods}`;
+    }
+  </script>
+
+</body>
+</html>
